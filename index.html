@@ -14,6 +14,7 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
     }
     #flipbook {
       width: 90vw;
@@ -33,16 +34,16 @@
 </head>
 <body>
   <div id="flipbook">
-    <div class="page"><img src="images/1.png"></div>
+    <div class="page"><img src="images/01.png"></div>
+<div class="page"><img src="images/02.png"></div>
+<div class="page"><img src="images/03.png"></div>
+<div class="page"><img src="images/04.png"></div>
+<div class="page"><img src="images/05.png"></div>
+<div class="page"><img src="images/06.png"></div>
+<div class="page"><img src="images/07.png"></div>
+<div class="page"><img src="images/08.png"></div>
+<div class="page"><img src="images/09.png"></div>
 <div class="page"><img src="images/10.png"></div>
-<div class="page"><img src="images/2.png"></div>
-<div class="page"><img src="images/3.png"></div>
-<div class="page"><img src="images/4.png"></div>
-<div class="page"><img src="images/5.png"></div>
-<div class="page"><img src="images/6.png"></div>
-<div class="page"><img src="images/7.png"></div>
-<div class="page"><img src="images/8.png"></div>
-<div class="page"><img src="images/9.png"></div>
 
   </div>
 
@@ -51,7 +52,9 @@
       width: 800,
       height: 600,
       autoCenter: true,
-      display: 'single'
+      display: 'single',
+      acceleration: true,
+      gradients: true
     });
   </script>
 </body>
