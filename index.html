@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>はなみずびっくりぽん！</title>
-  <script src="js/jquery.min.js"></script>
-  <script src="js/turn.min.js"></script>
   <style>
     body {
       background-color: white;
@@ -14,15 +12,19 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      padding: 0;
       overflow: hidden;
     }
     #flipbook {
       width: 90vw;
       height: 90vh;
+      max-width: 800px;
+      max-height: 600px;
     }
     #flipbook .page {
       width: 100%;
       height: 100%;
+      background-color: white;
     }
     #flipbook img {
       width: 100%;
@@ -30,31 +32,64 @@
       object-fit: contain;
       display: block;
     }
+    /* モバイル対応 */
+    @media (max-width: 768px) {
+      #flipbook {
+        width: 95vw;
+        height: 80vh;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="flipbook">
     <div class="page"><img src="images/01.png"></div>
-<div class="page"><img src="images/02.png"></div>
-<div class="page"><img src="images/03.png"></div>
-<div class="page"><img src="images/04.png"></div>
-<div class="page"><img src="images/05.png"></div>
-<div class="page"><img src="images/06.png"></div>
-<div class="page"><img src="images/07.png"></div>
-<div class="page"><img src="images/08.png"></div>
-<div class="page"><img src="images/09.png"></div>
-<div class="page"><img src="images/10.png"></div>
-
+    <div class="page"><img src="images/02.png"></div>
+    <div class="page"><img src="images/03.png"></div>
+    <div class="page"><img src="images/04.png"></div>
+    <div class="page"><img src="images/05.png"></div>
+    <div class="page"><img src="images/06.png"></div>
+    <div class="page"><img src="images/07.png"></div>
+    <div class="page"><img src="images/08.png"></div>
+    <div class="page"><img src="images/09.png"></div>
+    <div class="page"><img src="images/10.png"></div>
   </div>
 
+  <!-- 順序重要: 最初にjQuery、次にTurn.js -->
+  <script src="js/jquery.min.js"></script>
+  <script src="js/turn.min.js"></script>
+  
   <script>
-    $("#flipbook").turn({
-      width: 800,
-      height: 600,
-      autoCenter: true,
-      display: 'single',
-      acceleration: true,
-      gradients: true
+    $(document).ready(function() {
+      $("#flipbook").turn({
+        width: '100%',
+        height: '100%',
+        autoCenter: true,
+        display: 'single',
+        acceleration: true,
+        gradients: true,
+        elevation: 50,
+        when: {
+          turned: function(e, page) {
+            console.log('Current page: ' + page);
+          }
+        }
+      });
+      
+      // ウィンドウサイズ変更時に対応
+      $(window).resize(function() {
+        $("#flipbook").turn('size', 
+          $("#flipbook").parent().width(), 
+          $("#flipbook").parent().height());
+      });
+      
+      // スワイプやめくりのヒントを表示（オプション）
+      setTimeout(function() {
+        $("#flipbook").turn('peel', 'br');
+        setTimeout(function() {
+          $("#flipbook").turn('peel', false);
+        }, 1000);
+      }, 2000);
     });
   </script>
 </body>
