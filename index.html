@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>はなみずびっくりぽん！</title>
   <style>
     body {
@@ -16,16 +17,21 @@
     #flipbook {
       width: 90vw;
       height: 90vh;
+      max-width: 800px;
+      max-height: 600px;
     }
     #flipbook .page {
-      width: 100%;
-      height: 100%;
+      background-color: white;
     }
     #flipbook img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
+    }
+    /* 折り返しのヒントを示す */
+    .hard {
+      background: #ccc !important;
     }
   </style>
   <!-- CDNからjQueryとTurn.jsを直接読み込む -->
@@ -34,7 +40,7 @@
 </head>
 <body>
   <div id="flipbook">
-    <div class="page"><img src="images/01.png"></div>
+    <div class="hard"><img src="images/01.png"></div>
     <div class="page"><img src="images/02.png"></div>
     <div class="page"><img src="images/03.png"></div>
     <div class="page"><img src="images/04.png"></div>
@@ -43,20 +49,54 @@
     <div class="page"><img src="images/07.png"></div>
     <div class="page"><img src="images/08.png"></div>
     <div class="page"><img src="images/09.png"></div>
-    <div class="page"><img src="images/10.png"></div>
+    <div class="hard"><img src="images/10.png"></div>
   </div>
   
   <script>
     // ページが完全に読み込まれた後に実行
     $(document).ready(function() {
+      // まずビューポートのサイズを取得
+      var viewportWidth = Math.min(window.innerWidth * 0.9, 800);
+      var viewportHeight = Math.min(window.innerHeight * 0.9, 600);
+      
       $("#flipbook").turn({
-        width: 800,
-        height: 600,
+        width: viewportWidth,
+        height: viewportHeight,
         autoCenter: true,
         display: 'single',
         acceleration: true,
-        gradients: true
+        gradients: true,
+        elevation: 50,
+        duration: 1000,
+        when: {
+          turning: function(e, page, view) {
+            console.log('Turning to page ' + page);
+          },
+          turned: function(e, page, view) {
+            console.log('Now on page ' + page);
+          }
+        }
       });
+      
+      // デバッグ情報
+      console.log('Turn.js initialized with width: ' + viewportWidth + ' height: ' + viewportHeight);
+      
+      // キーボード操作も追加
+      $(document).keydown(function(e) {
+        if (e.keyCode == 37) { // 左矢印キー
+          $('#flipbook').turn('previous');
+        } else if (e.keyCode == 39) { // 右矢印キー
+          $('#flipbook').turn('next');
+        }
+      });
+      
+      // 初期表示時に少しめくるエフェクトを表示
+      setTimeout(function() {
+        $("#flipbook").turn("peel", "br");
+        setTimeout(function() {
+          $("#flipbook").turn("peel", false);
+        }, 1500);
+      }, 1000);
     });
   </script>
 </body>
