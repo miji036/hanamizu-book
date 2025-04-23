@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>はなみずびっくりぽん！</title>
   <style>
     html, body {
@@ -45,10 +47,12 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      /* 下部に余白を追加 - ホームインジケーター対策 */
+      padding-bottom: 20px;
     }
     .controls {
       position: fixed;
-      bottom: 0;
+      bottom: 20px; /* 位置を上げてホームインジケーターと被らないように */
       left: 0;
       width: 100%;
       display: flex;
@@ -97,14 +101,20 @@
       .controls {
         /* 横向き時は最初は非表示 */
         opacity: 0;
+        bottom: 30px; /* iPhoneのホームインジケーター対策 */
       }
       #page-indicator {
         /* 横向き時はページ番号も最初は非表示 */
         opacity: 0;
+        bottom: 30px; /* iPhoneのホームインジケーター対策 */
       }
       .ui-active .controls,
       .ui-active #page-indicator {
         opacity: 0.5;
+      }
+      /* iPhoneのホームインジケーター対策 */
+      .page img {
+        padding-bottom: 30px;
       }
     }
     
@@ -112,7 +122,18 @@
     .ui-active .controls:hover {
       opacity: 1;
     }
+
+    /* 全画面表示時のスタイル調整 */
+    @media (display-mode: standalone), (display-mode: fullscreen) {
+      #book-container {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    }
   </style>
+  <!-- ホーム画面に追加するためのアイコンとスプラッシュ画面の設定 -->
+  <link rel="apple-touch-icon" href="images/01.png">
+  <meta name="apple-mobile-web-app-title" content="はなみずびっくりぽん！">
 </head>
 <body>
   <div id="book-container">
@@ -283,6 +304,12 @@
       // 画面の向きが変わった時にチェック
       window.addEventListener('resize', checkOrientation);
       window.addEventListener('orientationchange', checkOrientation);
+      
+      // ホーム画面からの起動を検出
+      if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('全画面モードで表示中');
+        // 全画面表示時の追加設定をここに記述
+      }
     });
   </script>
 </body>
