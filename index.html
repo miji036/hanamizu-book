@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>はなみずびっくりぽん！</title>
   <style>
     body {
@@ -12,19 +11,15 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      padding: 0;
       overflow: hidden;
     }
     #flipbook {
       width: 90vw;
       height: 90vh;
-      max-width: 800px;
-      max-height: 600px;
     }
     #flipbook .page {
       width: 100%;
       height: 100%;
-      background-color: white;
     }
     #flipbook img {
       width: 100%;
@@ -33,9 +28,6 @@
       display: block;
     }
   </style>
-  <!-- スクリプトを head 内に移動 -->
-  <script type="text/javascript" src="/hanamizu-book/js/jquery.min.js"></script>
-  <script type="text/javascript" src="/hanamizu-book/js/turn.min.js"></script>
 </head>
 <body>
   <div id="flipbook">
@@ -50,38 +42,22 @@
     <div class="page"><img src="images/09.png"></div>
     <div class="page"><img src="images/10.png"></div>
   </div>
+
+  <!-- CDNからjQueryとTurn.jsを読み込み -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
   
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (typeof jQuery !== 'undefined') {
-        $("#flipbook").turn({
-          width: '100%',
-          height: '100%',
-          autoCenter: true,
-          display: 'single',
-          acceleration: true,
-          gradients: true
-        });
-      } else {
-        console.error("jQuery is not loaded!");
-        // jQueryがない場合はCDNから読み込む代替手段
-        var script = document.createElement('script');
-        script.src = "https://code.jquery.com/jquery-3.7.1.min.js";
-        script.integrity = "sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=";
-        script.crossOrigin = "anonymous";
-        script.onload = function() {
-          // jQueryが読み込まれた後にTurn.jsを読み込む
-          var turnScript = document.createElement('script');
-          turnScript.src = "https://raw.githubusercontent.com/blasten/turn.js/master/turn.min.js";
-          turnScript.onload = function() {
-            // Turn.jsが読み込まれた後に初期化
-            $("#flipbook").turn({
-              width: '100%',
-              height: '100%',
-              autoCenter: true,
-              display: 'single',
-              acceleration: true,
-              gradients: true
-            });
-          };
-          document.head.appendChild(turnScript);
+    $(document).ready(function() {
+      $("#flipbook").turn({
+        width: 800,
+        height: 600,
+        autoCenter: true,
+        display: 'single',
+        acceleration: true,
+        gradients: true
+      });
+    });
+  </script>
+</body>
+</html>
