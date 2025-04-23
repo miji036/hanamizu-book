@@ -22,7 +22,7 @@
     #book-container {
       position: relative;
       width: 100%;
-      height: 85vh;
+      height: 100vh;
       max-width: 800px;
       margin: 0 auto;
       display: flex;
@@ -55,8 +55,12 @@
       justify-content: space-between;
       padding: 10px;
       box-sizing: border-box;
-      background-color: rgba(255, 255, 255, 0.7);
-      border-top: 1px solid #eee;
+      background-color: rgba(255, 255, 255, 0);
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+    .controls:hover {
+      opacity: 1;
     }
     .nav-buttons {
       display: flex;
@@ -65,42 +69,48 @@
     }
     .nav-buttons button {
       padding: 10px 20px;
-      background-color: #fff;
+      background-color: rgba(255, 255, 255, 0.7);
       border: 1px solid #ddd;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
     }
     .nav-buttons button:hover {
-      background-color: #f0f0f0;
+      background-color: rgba(255, 255, 255, 0.9);
     }
     #page-indicator {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(255, 255, 255, 0.5);
-      color: #666;
-      padding: 5px 10px;
+      background-color: rgba(255, 255, 255, 0.3);
+      color: #888;
+      padding: 2px 10px;
       border-radius: 20px;
       font-size: 14px;
+      opacity: 0.5;
+      pointer-events: none;
     }
-    @media (orientation: portrait) {
-      /* 縦向きの時のスタイル */
+    
+    /* 横向きのスマートフォン用のスタイル */
+    @media (orientation: landscape) and (max-height: 500px) {
       .controls {
-        position: fixed;
-        bottom: 0;
+        /* 横向き時は最初は非表示 */
+        opacity: 0;
+      }
+      #page-indicator {
+        /* 横向き時はページ番号も最初は非表示 */
+        opacity: 0;
+      }
+      .ui-active .controls,
+      .ui-active #page-indicator {
+        opacity: 0.5;
       }
     }
-    @media (orientation: landscape) {
-      /* 横向きの時のスタイル */
-      .controls {
-        position: fixed;
-        bottom: 0;
-      }
-      #book-container {
-        height: 75vh;
-      }
+    
+    /* タップした時の表示切り替え用のクラス */
+    .ui-active .controls:hover {
+      opacity: 1;
     }
   </style>
 </head>
@@ -134,8 +144,11 @@
       const prevBtn = document.getElementById('prev-btn');
       const nextBtn = document.getElementById('next-btn');
       const pageIndicator = document.getElementById('page-indicator');
+      const bookContainer = document.getElementById('book-container');
       let currentPage = 1;
       const totalPages = pages.length;
+      let controlsVisible = false;
+      let controlsTimeout;
       
       // ページ表示を更新する関数
       function updatePageDisplay() {
@@ -160,7 +173,62 @@
         console.log('現在のページ: ' + currentPage);
       }
       
-      // ボタンイベントリスナー - イベントバブリング防止のためstopPropagationを追加
+      // UIの表示/非表示を切り替える関数
+      function toggleControls() {
+        document.body.classList.toggle('ui-active');
+        controlsVisible = !controlsVisible;
+        
+        // タイマーをクリア
+        if (controlsTimeout) {
+          clearTimeout(controlsTimeout);
+        }
+        
+        // 表示している場合は、一定時間後に非表示に
+        if (controlsVisible) {
+          controlsTimeout = setTimeout(function() {
+            document.body.classList.remove('ui-active');
+            controlsVisible = false;
+          }, 3000); // 3秒後に非表示
+        }
+      }
+      
+      // タップ/クリックでUIの表示切り替え
+      bookContainer.addEventListener('click', function(e) {
+        // ボタンクリックは無視
+        if (e.target.tagName === 'BUTTON' || e.target.closest('.controls')) {
+          return;
+        }
+        
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const width = rect.width;
+        
+        // モバイルかどうかを判定（画面の向きで簡易判定）
+        const isMobileLandscape = window.innerHeight < 500 && window.innerWidth > window.innerHeight;
+        
+        // モバイル横向きの場合はUIの表示/非表示を切り替え
+        if (isMobileLandscape) {
+          toggleControls();
+          return;
+        }
+        
+        // それ以外の場合は通常のページめくり動作
+        if (x < width / 2) {
+          // 画面の左側をクリック：前のページ
+          if (currentPage > 1) {
+            currentPage--;
+            updatePageDisplay();
+          }
+        } else {
+          // 画面の右側をクリック：次のページ
+          if (currentPage < totalPages) {
+            currentPage++;
+            updatePageDisplay();
+          }
+        }
+      });
+      
+      // ボタンイベントリスナー
       prevBtn.addEventListener('click', function(event) {
         event.stopPropagation();
         if (currentPage > 1) {
@@ -192,41 +260,29 @@
         }
       });
       
-      // 画面タップ/クリック操作 - コントロールエリア以外をクリックした場合のみ
-      document.getElementById('book-container').addEventListener('click', function(e) {
-        // コントロールエリア内のクリックを無視
-        if (e.target.closest('.controls') || e.target.tagName === 'BUTTON') {
-          return;
-        }
-        
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const width = rect.width;
-        
-        // 画面の左側をクリック：前のページ
-        if (x < width / 2) {
-          if (currentPage > 1) {
-            currentPage--;
-            updatePageDisplay();
-          }
-        } 
-        // 画面の右側をクリック：次のページ
-        else {
-          if (currentPage < totalPages) {
-            currentPage++;
-            updatePageDisplay();
-          }
-        }
-      });
-      
       // 初期表示
       updatePageDisplay();
-      console.log('ページめくりの初期化完了');
       
-      // ウィンドウリサイズ時の処理
-      window.addEventListener('resize', function() {
-        // 必要に応じてここに追加のリサイズ処理を記述
-      });
+      // 横向きかどうかを判定して初期UIを設定
+      function checkOrientation() {
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const isMobile = window.innerHeight < 500;
+        
+        if (isLandscape && isMobile) {
+          // モバイル横向きの場合
+          document.body.classList.remove('ui-active');
+        } else {
+          // それ以外の場合
+          document.body.classList.add('ui-active');
+        }
+      }
+      
+      // 初期チェック
+      checkOrientation();
+      
+      // 画面の向きが変わった時にチェック
+      window.addEventListener('resize', checkOrientation);
+      window.addEventListener('orientationchange', checkOrientation);
     });
   </script>
 </body>
