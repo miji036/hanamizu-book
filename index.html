@@ -15,100 +15,89 @@
       padding: 0;
       overflow: hidden;
     }
-    #flipbook {
-      margin: 0 auto;
+    #book {
+      width: 90vw;
+      height: 90vh;
+      max-width: 800px;
+      max-height: 600px;
     }
-    .page {
+    .page-wrapper {
       background-color: white;
     }
-    #flipbook img {
+    .page img {
       width: 100%;
       height: 100%;
       object-fit: contain;
     }
   </style>
-  <!-- jQueryは最新バージョンを使用 -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <!-- Turn.jsの別のCDNを試す -->
-  <script src="https://raw.githack.com/blasten/turn.js/master/turn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
 </head>
 <body>
-  <div id="flipbook">
-    <div><img src="images/01.png" alt="ページ1"></div>
-    <div><img src="images/02.png" alt="ページ2"></div>
-    <div><img src="images/03.png" alt="ページ3"></div>
-    <div><img src="images/04.png" alt="ページ4"></div>
-    <div><img src="images/05.png" alt="ページ5"></div>
-    <div><img src="images/06.png" alt="ページ6"></div>
-    <div><img src="images/07.png" alt="ページ7"></div>
-    <div><img src="images/08.png" alt="ページ8"></div>
-    <div><img src="images/09.png" alt="ページ9"></div>
-    <div><img src="images/10.png" alt="ページ10"></div>
+  <div id="book">
+    <div class="page" data-density="hard">
+      <img src="images/01.png" alt="ページ1">
+    </div>
+    <div class="page">
+      <img src="images/02.png" alt="ページ2">
+    </div>
+    <div class="page">
+      <img src="images/03.png" alt="ページ3">
+    </div>
+    <div class="page">
+      <img src="images/04.png" alt="ページ4">
+    </div>
+    <div class="page">
+      <img src="images/05.png" alt="ページ5">
+    </div>
+    <div class="page">
+      <img src="images/06.png" alt="ページ6">
+    </div>
+    <div class="page">
+      <img src="images/07.png" alt="ページ7">
+    </div>
+    <div class="page">
+      <img src="images/08.png" alt="ページ8">
+    </div>
+    <div class="page">
+      <img src="images/09.png" alt="ページ9">
+    </div>
+    <div class="page" data-density="hard">
+      <img src="images/10.png" alt="ページ10">
+    </div>
   </div>
   
   <script>
-    $(window).on('load', function() {
-      console.log('ページ読み込み完了');
+    document.addEventListener('DOMContentLoaded', function() {
+      const pageFlip = new PageFlip(
+        document.getElementById('book'),
+        {
+          width: 400, // 幅を設定
+          height: 600, // 高さを設定
+          size: 'fixed',
+          minWidth: 300,
+          maxWidth: 800,
+          minHeight: 400,
+          maxHeight: 1000,
+          maxShadowOpacity: 0.5,
+          showCover: true,
+          mobileScrollSupport: false // モバイルでスクロールを防止
+        }
+      );
       
-      var flipbookEL = document.getElementById('flipbook');
+      pageFlip.loadFromHTML(document.querySelectorAll('.page'));
       
-      // 初期サイズを設定
-      var width = 400;
-      var height = 600;
+      console.log('PageFlip 初期化完了');
       
-      console.log('初期化サイズ: ' + width + 'x' + height);
-      
-      $(flipbookEL).turn({
-        width: width,
-        height: height,
-        autoCenter: true,
-        display: 'single',
-        page: 1,
-        acceleration: false,  // モバイルブラウザでパフォーマンスが向上
-        gradients: false,     // パフォーマンス向上のため無効化
-        turnCorners: 'bl,br', // 右下隅からめくれるように
-        when: {
-          start: function(e, pageObj) {
-            console.log('ページめくり開始');
-          },
-          end: function(e, pageObj) {
-            console.log('ページめくり完了');
-          },
-          missing: function(e, pages) {
-            console.log('ページが見つかりません: ' + pages);
-          }
+      // キーボード操作を追加
+      document.addEventListener('keydown', function(e) {
+        if (e.keyCode === 37) { // 左矢印キー
+          pageFlip.flipPrev();
+          console.log('前のページへ');
+        } else if (e.keyCode === 39) { // 右矢印キー
+          pageFlip.flipNext();
+          console.log('次のページへ');
         }
       });
-      
-      // 別のキーボードイベント処理
-      $(document).keydown(function(e) {
-        switch(e.keyCode) {
-          case 37: // 左矢印
-            $('#flipbook').turn('previous');
-            console.log('前のページへ');
-            break;
-          case 39: // 右矢印
-            $('#flipbook').turn('next');
-            console.log('次のページへ');
-            break;
-        }
-      });
-      
-      // 明示的にクリックイベントを追加
-      $('#flipbook').on('click', function(e) {
-        var width = $(this).width();
-        var posX = e.pageX - $(this).offset().left;
-        
-        if(posX < width/2) {
-          $(this).turn('previous');
-          console.log('左側クリック - 前のページへ');
-        } else {
-          $(this).turn('next');
-          console.log('右側クリック - 次のページへ');
-        }
-      });
-      
-      console.log('Turn.js 初期化完了');
     });
   </script>
 </body>
