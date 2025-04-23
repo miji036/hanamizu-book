@@ -5,22 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>はなみずびっくりぽん！</title>
   <style>
-    body {
-      background-color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: white;
       overflow: hidden;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     #book-container {
       position: relative;
-      width: 90vw;
-      max-width: 500px;
-      height: 90vh;
-      max-height: 700px;
+      width: 100%;
+      height: 85vh;
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .page {
       position: absolute;
@@ -29,7 +36,7 @@
       width: 100%;
       height: 100%;
       display: none;
-      background-color: white;
+      background-color: #fffdf0;
     }
     .page.active {
       display: block;
@@ -39,36 +46,61 @@
       height: 100%;
       object-fit: contain;
     }
-    .nav-buttons {
-      position: absolute;
-      bottom: 10px;
+    .controls {
+      position: fixed;
+      bottom: 0;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 10px;
       box-sizing: border-box;
-      z-index: 10;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-top: 1px solid #eee;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
     }
     .nav-buttons button {
       padding: 10px 20px;
-      background-color: rgba(255, 255, 255, 0.7);
+      background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 16px;
     }
     .nav-buttons button:hover {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: #f0f0f0;
     }
     #page-indicator {
       position: absolute;
-      bottom: 10px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(255, 255, 255, 0.7);
+      background-color: rgba(255, 255, 255, 0.5);
+      color: #666;
       padding: 5px 10px;
-      border-radius: 5px;
-      z-index: 10;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+    @media (orientation: portrait) {
+      /* 縦向きの時のスタイル */
+      .controls {
+        position: fixed;
+        bottom: 0;
+      }
+    }
+    @media (orientation: landscape) {
+      /* 横向きの時のスタイル */
+      .controls {
+        position: fixed;
+        bottom: 0;
+      }
+      #book-container {
+        height: 75vh;
+      }
     }
   </style>
 </head>
@@ -85,12 +117,14 @@
     <div class="page" id="page9"><img src="images/09.png" alt="ページ9"></div>
     <div class="page" id="page10"><img src="images/10.png" alt="ページ10"></div>
     
+    <div id="page-indicator">1 / 10</div>
+  </div>
+  
+  <div class="controls">
     <div class="nav-buttons">
       <button id="prev-btn">前のページ</button>
       <button id="next-btn">次のページ</button>
     </div>
-    
-    <div id="page-indicator">1 / 10</div>
   </div>
   
   <script>
@@ -158,10 +192,10 @@
         }
       });
       
-      // 画面タップ/クリック操作 - ボタン上のクリックを除外
+      // 画面タップ/クリック操作 - コントロールエリア以外をクリックした場合のみ
       document.getElementById('book-container').addEventListener('click', function(e) {
-        // ボタン上のクリックを無視
-        if (e.target.tagName === 'BUTTON' || e.target.closest('.nav-buttons') || e.target.closest('#page-indicator')) {
+        // コントロールエリア内のクリックを無視
+        if (e.target.closest('.controls') || e.target.tagName === 'BUTTON') {
           return;
         }
         
@@ -188,6 +222,11 @@
       // 初期表示
       updatePageDisplay();
       console.log('ページめくりの初期化完了');
+      
+      // ウィンドウリサイズ時の処理
+      window.addEventListener('resize', function() {
+        // 必要に応じてここに追加のリサイズ処理を記述
+      });
     });
   </script>
 </body>
