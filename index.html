@@ -45,14 +45,16 @@
     }
     .page img {
       width: 100%;
-      height: 100%;
+      height: calc(100% - 40px); /* 高さから余白分を引く */
       object-fit: contain;
-      /* 下部に余白を追加 - ホームインジケーター対策 */
-      padding-bottom: 20px;
+      /* 余白を追加 - ホームインジケーター対策 */
+      padding-bottom: 40px;
+      position: relative;
+      top: 0;
     }
     .controls {
       position: fixed;
-      bottom: 20px; /* 位置を上げてホームインジケーターと被らないように */
+      bottom: 40px; /* より大きな余白を確保 */
       left: 0;
       width: 100%;
       display: flex;
@@ -62,6 +64,7 @@
       background-color: rgba(255, 255, 255, 0);
       opacity: 0.3;
       transition: opacity 0.3s;
+      z-index: 10; /* 確実に表示されるように */
     }
     .controls:hover {
       opacity: 1;
@@ -84,7 +87,7 @@
     }
     #page-indicator {
       position: absolute;
-      bottom: 20px;
+      bottom: 40px; /* 位置を上げる */
       left: 50%;
       transform: translateX(-50%);
       background-color: rgba(255, 255, 255, 0.3);
@@ -94,6 +97,7 @@
       font-size: 14px;
       opacity: 0.5;
       pointer-events: none;
+      z-index: 10; /* 確実に表示されるように */
     }
     
     /* 横向きのスマートフォン用のスタイル */
@@ -101,20 +105,48 @@
       .controls {
         /* 横向き時は最初は非表示 */
         opacity: 0;
-        bottom: 30px; /* iPhoneのホームインジケーター対策 */
+        bottom: 50px; /* より大きな余白を確保 */
       }
       #page-indicator {
         /* 横向き時はページ番号も最初は非表示 */
         opacity: 0;
-        bottom: 30px; /* iPhoneのホームインジケーター対策 */
+        bottom: 50px; /* より大きな余白を確保 */
       }
       .ui-active .controls,
       .ui-active #page-indicator {
         opacity: 0.5;
       }
-      /* iPhoneのホームインジケーター対策 */
+      /* iPhoneのホームインジケーター対策（より大きな余白） */
       .page img {
-        padding-bottom: 30px;
+        height: calc(100% - 60px); /* 高さから余白分を引く */
+        padding-bottom: 60px;
+      }
+    }
+    
+    /* iPhone X以降のノッチ・ホームインジケーター対策 */
+    @supports (padding: max(0px)) {
+      .page img {
+        padding-bottom: max(40px, env(safe-area-inset-bottom));
+      }
+      .controls {
+        bottom: max(40px, env(safe-area-inset-bottom));
+      }
+      #page-indicator {
+        bottom: max(40px, env(safe-area-inset-bottom));
+      }
+      
+      /* 横向き時の特別対応 */
+      @media (orientation: landscape) and (max-height: 500px) {
+        .page img {
+          height: calc(100% - max(60px, env(safe-area-inset-bottom)));
+          padding-bottom: max(60px, env(safe-area-inset-bottom));
+        }
+        .controls {
+          bottom: max(50px, env(safe-area-inset-bottom));
+        }
+        #page-indicator {
+          bottom: max(50px, env(safe-area-inset-bottom));
+        }
       }
     }
     
