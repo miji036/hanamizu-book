@@ -12,91 +12,103 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      padding: 0;
       overflow: hidden;
     }
     #flipbook {
-      width: 90vw;
-      height: 90vh;
-      max-width: 800px;
-      max-height: 600px;
+      margin: 0 auto;
     }
-    #flipbook .page {
+    .page {
       background-color: white;
     }
     #flipbook img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      display: block;
-    }
-    /* 折り返しのヒントを示す */
-    .hard {
-      background: #ccc !important;
     }
   </style>
-  <!-- CDNからjQueryとTurn.jsを直接読み込む -->
+  <!-- jQueryは最新バージョンを使用 -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+  <!-- Turn.jsの別のCDNを試す -->
+  <script src="https://raw.githack.com/blasten/turn.js/master/turn.min.js"></script>
 </head>
 <body>
   <div id="flipbook">
-    <div class="hard"><img src="images/01.png"></div>
-    <div class="page"><img src="images/02.png"></div>
-    <div class="page"><img src="images/03.png"></div>
-    <div class="page"><img src="images/04.png"></div>
-    <div class="page"><img src="images/05.png"></div>
-    <div class="page"><img src="images/06.png"></div>
-    <div class="page"><img src="images/07.png"></div>
-    <div class="page"><img src="images/08.png"></div>
-    <div class="page"><img src="images/09.png"></div>
-    <div class="hard"><img src="images/10.png"></div>
+    <div><img src="images/01.png" alt="ページ1"></div>
+    <div><img src="images/02.png" alt="ページ2"></div>
+    <div><img src="images/03.png" alt="ページ3"></div>
+    <div><img src="images/04.png" alt="ページ4"></div>
+    <div><img src="images/05.png" alt="ページ5"></div>
+    <div><img src="images/06.png" alt="ページ6"></div>
+    <div><img src="images/07.png" alt="ページ7"></div>
+    <div><img src="images/08.png" alt="ページ8"></div>
+    <div><img src="images/09.png" alt="ページ9"></div>
+    <div><img src="images/10.png" alt="ページ10"></div>
   </div>
   
   <script>
-    // ページが完全に読み込まれた後に実行
-    $(document).ready(function() {
-      // まずビューポートのサイズを取得
-      var viewportWidth = Math.min(window.innerWidth * 0.9, 800);
-      var viewportHeight = Math.min(window.innerHeight * 0.9, 600);
+    $(window).on('load', function() {
+      console.log('ページ読み込み完了');
       
-      $("#flipbook").turn({
-        width: viewportWidth,
-        height: viewportHeight,
+      var flipbookEL = document.getElementById('flipbook');
+      
+      // 初期サイズを設定
+      var width = 400;
+      var height = 600;
+      
+      console.log('初期化サイズ: ' + width + 'x' + height);
+      
+      $(flipbookEL).turn({
+        width: width,
+        height: height,
         autoCenter: true,
         display: 'single',
-        acceleration: true,
-        gradients: true,
-        elevation: 50,
-        duration: 1000,
+        page: 1,
+        acceleration: false,  // モバイルブラウザでパフォーマンスが向上
+        gradients: false,     // パフォーマンス向上のため無効化
+        turnCorners: 'bl,br', // 右下隅からめくれるように
         when: {
-          turning: function(e, page, view) {
-            console.log('Turning to page ' + page);
+          start: function(e, pageObj) {
+            console.log('ページめくり開始');
           },
-          turned: function(e, page, view) {
-            console.log('Now on page ' + page);
+          end: function(e, pageObj) {
+            console.log('ページめくり完了');
+          },
+          missing: function(e, pages) {
+            console.log('ページが見つかりません: ' + pages);
           }
         }
       });
       
-      // デバッグ情報
-      console.log('Turn.js initialized with width: ' + viewportWidth + ' height: ' + viewportHeight);
-      
-      // キーボード操作も追加
+      // 別のキーボードイベント処理
       $(document).keydown(function(e) {
-        if (e.keyCode == 37) { // 左矢印キー
-          $('#flipbook').turn('previous');
-        } else if (e.keyCode == 39) { // 右矢印キー
-          $('#flipbook').turn('next');
+        switch(e.keyCode) {
+          case 37: // 左矢印
+            $('#flipbook').turn('previous');
+            console.log('前のページへ');
+            break;
+          case 39: // 右矢印
+            $('#flipbook').turn('next');
+            console.log('次のページへ');
+            break;
         }
       });
       
-      // 初期表示時に少しめくるエフェクトを表示
-      setTimeout(function() {
-        $("#flipbook").turn("peel", "br");
-        setTimeout(function() {
-          $("#flipbook").turn("peel", false);
-        }, 1500);
-      }, 1000);
+      // 明示的にクリックイベントを追加
+      $('#flipbook').on('click', function(e) {
+        var width = $(this).width();
+        var posX = e.pageX - $(this).offset().left;
+        
+        if(posX < width/2) {
+          $(this).turn('previous');
+          console.log('左側クリック - 前のページへ');
+        } else {
+          $(this).turn('next');
+          console.log('右側クリック - 次のページへ');
+        }
+      });
+      
+      console.log('Turn.js 初期化完了');
     });
   </script>
 </body>
