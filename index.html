@@ -45,16 +45,16 @@
     }
     .page img {
       width: 100%;
-      height: calc(100% - 40px); /* 高さから余白分を引く */
+      height: calc(100% - 25px); /* 高さから余白分を引く - 最小化 */
       object-fit: contain;
-      /* 余白を追加 - ホームインジケーター対策 */
-      padding-bottom: 40px;
+      /* 余白を追加 - ホームインジケーター対策（最小化） */
+      padding-bottom: 25px;
       position: relative;
       top: 0;
     }
     .controls {
       position: fixed;
-      bottom: 40px; /* より大きな余白を確保 */
+      bottom: 25px; /* ギリギリの余白 */
       left: 0;
       width: 100%;
       display: flex;
@@ -87,7 +87,7 @@
     }
     #page-indicator {
       position: absolute;
-      bottom: 40px; /* 位置を上げる */
+      bottom: 25px; /* ギリギリの余白 */
       left: 50%;
       transform: translateX(-50%);
       background-color: rgba(255, 255, 255, 0.3);
@@ -105,47 +105,47 @@
       .controls {
         /* 横向き時は最初は非表示 */
         opacity: 0;
-        bottom: 50px; /* より大きな余白を確保 */
+        bottom: 35px; /* ギリギリの余白 */
       }
       #page-indicator {
         /* 横向き時はページ番号も最初は非表示 */
         opacity: 0;
-        bottom: 50px; /* より大きな余白を確保 */
+        bottom: 35px; /* ギリギリの余白 */
       }
       .ui-active .controls,
       .ui-active #page-indicator {
         opacity: 0.5;
       }
-      /* iPhoneのホームインジケーター対策（より大きな余白） */
+      /* iPhoneのホームインジケーター対策（ギリギリの余白） */
       .page img {
-        height: calc(100% - 60px); /* 高さから余白分を引く */
-        padding-bottom: 60px;
+        height: calc(100% - 35px); /* 高さから余白分を引く */
+        padding-bottom: 35px;
       }
     }
     
     /* iPhone X以降のノッチ・ホームインジケーター対策 */
     @supports (padding: max(0px)) {
       .page img {
-        padding-bottom: max(40px, env(safe-area-inset-bottom));
+        padding-bottom: max(25px, env(safe-area-inset-bottom));
       }
       .controls {
-        bottom: max(40px, env(safe-area-inset-bottom));
+        bottom: max(25px, env(safe-area-inset-bottom));
       }
       #page-indicator {
-        bottom: max(40px, env(safe-area-inset-bottom));
+        bottom: max(25px, env(safe-area-inset-bottom));
       }
       
       /* 横向き時の特別対応 */
       @media (orientation: landscape) and (max-height: 500px) {
         .page img {
-          height: calc(100% - max(60px, env(safe-area-inset-bottom)));
-          padding-bottom: max(60px, env(safe-area-inset-bottom));
+          height: calc(100% - max(35px, env(safe-area-inset-bottom)));
+          padding-bottom: max(35px, env(safe-area-inset-bottom));
         }
         .controls {
-          bottom: max(50px, env(safe-area-inset-bottom));
+          bottom: max(35px, env(safe-area-inset-bottom));
         }
         #page-indicator {
-          bottom: max(50px, env(safe-area-inset-bottom));
+          bottom: max(35px, env(safe-area-inset-bottom));
         }
       }
     }
