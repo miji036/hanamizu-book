@@ -15,89 +15,157 @@
       padding: 0;
       overflow: hidden;
     }
-    #book {
+    #book-container {
+      position: relative;
       width: 90vw;
+      max-width: 500px;
       height: 90vh;
-      max-width: 800px;
-      max-height: 600px;
+      max-height: 700px;
     }
-    .page-wrapper {
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
       background-color: white;
+    }
+    .page.active {
+      display: block;
     }
     .page img {
       width: 100%;
       height: 100%;
       object-fit: contain;
     }
+    .nav-buttons {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+    .nav-buttons button {
+      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .nav-buttons button:hover {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    #page-indicator {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
 </head>
 <body>
-  <div id="book">
-    <div class="page" data-density="hard">
-      <img src="images/01.png" alt="ページ1">
+  <div id="book-container">
+    <div class="page active" id="page1"><img src="images/01.png" alt="ページ1"></div>
+    <div class="page" id="page2"><img src="images/02.png" alt="ページ2"></div>
+    <div class="page" id="page3"><img src="images/03.png" alt="ページ3"></div>
+    <div class="page" id="page4"><img src="images/04.png" alt="ページ4"></div>
+    <div class="page" id="page5"><img src="images/05.png" alt="ページ5"></div>
+    <div class="page" id="page6"><img src="images/06.png" alt="ページ6"></div>
+    <div class="page" id="page7"><img src="images/07.png" alt="ページ7"></div>
+    <div class="page" id="page8"><img src="images/08.png" alt="ページ8"></div>
+    <div class="page" id="page9"><img src="images/09.png" alt="ページ9"></div>
+    <div class="page" id="page10"><img src="images/10.png" alt="ページ10"></div>
+    
+    <div class="nav-buttons">
+      <button id="prev-btn">前のページ</button>
+      <button id="next-btn">次のページ</button>
     </div>
-    <div class="page">
-      <img src="images/02.png" alt="ページ2">
-    </div>
-    <div class="page">
-      <img src="images/03.png" alt="ページ3">
-    </div>
-    <div class="page">
-      <img src="images/04.png" alt="ページ4">
-    </div>
-    <div class="page">
-      <img src="images/05.png" alt="ページ5">
-    </div>
-    <div class="page">
-      <img src="images/06.png" alt="ページ6">
-    </div>
-    <div class="page">
-      <img src="images/07.png" alt="ページ7">
-    </div>
-    <div class="page">
-      <img src="images/08.png" alt="ページ8">
-    </div>
-    <div class="page">
-      <img src="images/09.png" alt="ページ9">
-    </div>
-    <div class="page" data-density="hard">
-      <img src="images/10.png" alt="ページ10">
-    </div>
+    
+    <div id="page-indicator">1 / 10</div>
   </div>
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const pageFlip = new PageFlip(
-        document.getElementById('book'),
-        {
-          width: 400, // 幅を設定
-          height: 600, // 高さを設定
-          size: 'fixed',
-          minWidth: 300,
-          maxWidth: 800,
-          minHeight: 400,
-          maxHeight: 1000,
-          maxShadowOpacity: 0.5,
-          showCover: true,
-          mobileScrollSupport: false // モバイルでスクロールを防止
-        }
-      );
+      const pages = document.querySelectorAll('.page');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const pageIndicator = document.getElementById('page-indicator');
+      let currentPage = 1;
+      const totalPages = pages.length;
       
-      pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+      // ページ表示を更新する関数
+      function updatePageDisplay() {
+        // すべてのページを非表示
+        pages.forEach(page => page.classList.remove('active'));
+        // 現在のページを表示
+        document.getElementById('page' + currentPage).classList.add('active');
+        // ページ番号表示を更新
+        pageIndicator.textContent = currentPage + ' / ' + totalPages;
+      }
       
-      console.log('PageFlip 初期化完了');
-      
-      // キーボード操作を追加
-      document.addEventListener('keydown', function(e) {
-        if (e.keyCode === 37) { // 左矢印キー
-          pageFlip.flipPrev();
-          console.log('前のページへ');
-        } else if (e.keyCode === 39) { // 右矢印キー
-          pageFlip.flipNext();
-          console.log('次のページへ');
+      // 前のページボタン
+      prevBtn.addEventListener('click', function() {
+        if (currentPage > 1) {
+          currentPage--;
+          updatePageDisplay();
         }
       });
+      
+      // 次のページボタン
+      nextBtn.addEventListener('click', function() {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updatePageDisplay();
+        }
+      });
+      
+      // キーボード操作
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') { // 左矢印キー
+          if (currentPage > 1) {
+            currentPage--;
+            updatePageDisplay();
+          }
+        } else if (e.key === 'ArrowRight') { // 右矢印キー
+          if (currentPage < totalPages) {
+            currentPage++;
+            updatePageDisplay();
+          }
+        }
+      });
+      
+      // 画面タップ/クリック操作
+      document.getElementById('book-container').addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const width = rect.width;
+        
+        // 画面の左側をクリック：前のページ
+        if (x < width / 2) {
+          if (currentPage > 1) {
+            currentPage--;
+            updatePageDisplay();
+          }
+        } 
+        // 画面の右側をクリック：次のページ
+        else {
+          if (currentPage < totalPages) {
+            currentPage++;
+            updatePageDisplay();
+          }
+        }
+      });
+      
+      // 初期表示
+      updatePageDisplay();
+      console.log('ページめくりの初期化完了');
     });
   </script>
 </body>
