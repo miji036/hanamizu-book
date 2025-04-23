@@ -32,14 +32,10 @@
       object-fit: contain;
       display: block;
     }
-    /* モバイル対応 */
-    @media (max-width: 768px) {
-      #flipbook {
-        width: 95vw;
-        height: 80vh;
-      }
-    }
   </style>
+  <!-- スクリプトを head 内に移動 -->
+  <script type="text/javascript" src="/hanamizu-book/js/jquery.min.js"></script>
+  <script type="text/javascript" src="/hanamizu-book/js/turn.min.js"></script>
 </head>
 <body>
   <div id="flipbook">
@@ -54,43 +50,38 @@
     <div class="page"><img src="images/09.png"></div>
     <div class="page"><img src="images/10.png"></div>
   </div>
-
-  <!-- 順序重要: 最初にjQuery、次にTurn.js -->
-  <script src="js/jquery.min.js"></script>
-  <script src="js/turn.min.js"></script>
   
   <script>
-    $(document).ready(function() {
-      $("#flipbook").turn({
-        width: '100%',
-        height: '100%',
-        autoCenter: true,
-        display: 'single',
-        acceleration: true,
-        gradients: true,
-        elevation: 50,
-        when: {
-          turned: function(e, page) {
-            console.log('Current page: ' + page);
-          }
-        }
-      });
-      
-      // ウィンドウサイズ変更時に対応
-      $(window).resize(function() {
-        $("#flipbook").turn('size', 
-          $("#flipbook").parent().width(), 
-          $("#flipbook").parent().height());
-      });
-      
-      // スワイプやめくりのヒントを表示（オプション）
-      setTimeout(function() {
-        $("#flipbook").turn('peel', 'br');
-        setTimeout(function() {
-          $("#flipbook").turn('peel', false);
-        }, 1000);
-      }, 2000);
-    });
-  </script>
-</body>
-</html>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof jQuery !== 'undefined') {
+        $("#flipbook").turn({
+          width: '100%',
+          height: '100%',
+          autoCenter: true,
+          display: 'single',
+          acceleration: true,
+          gradients: true
+        });
+      } else {
+        console.error("jQuery is not loaded!");
+        // jQueryがない場合はCDNから読み込む代替手段
+        var script = document.createElement('script');
+        script.src = "https://code.jquery.com/jquery-3.7.1.min.js";
+        script.integrity = "sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=";
+        script.crossOrigin = "anonymous";
+        script.onload = function() {
+          // jQueryが読み込まれた後にTurn.jsを読み込む
+          var turnScript = document.createElement('script');
+          turnScript.src = "https://raw.githubusercontent.com/blasten/turn.js/master/turn.min.js";
+          turnScript.onload = function() {
+            // Turn.jsが読み込まれた後に初期化
+            $("#flipbook").turn({
+              width: '100%',
+              height: '100%',
+              autoCenter: true,
+              display: 'single',
+              acceleration: true,
+              gradients: true
+            });
+          };
+          document.head.appendChild(turnScript);
